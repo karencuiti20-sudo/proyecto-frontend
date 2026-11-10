@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CompuTab - Sistema de Préstamos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/modales.css">
+  <link rel="stylesheet" href="css/vencidos.css">
+  <link rel="stylesheet" href="css/impresion.css">
+  <link rel="icon" href="img/computab.jpeg" type="image/x-icon">
+</head>
+
+<body>
+
+  <!-- ================= PÁGINA INICIAL ================= -->
+  <section id="view-inicio" class="login-page active">
+    <div class="login-card">
+      <header class="login-header">
+        <img class="login-logo" src="img/computab.jpeg" alt="CompuTab">
+        <h1>Sistema de Préstamos de PC</h1>
+        <p>Escuela Técnica de Tala</p>
+      </header>
+
+      <button type="button" id="btn-ir-cedula" class="btn btn-blue w-100 shadow-btn">
+        <i class="fas fa-laptop"></i> Prestar / Devolver un equipo
+      </button>
+      <button type="button" id="btn-ir-admin" class="btn btn-outline w-100" style="margin-top:12px">
+        <i class="fas fa-user-shield"></i> Administrador
+      </button>
+
+      <footer class="login-footer">
+        <small>© 2026 CompuTab</small>
+      </footer>
+    </div>
+  </section>
+
+  <!-- ================= INGRESO CON CÉDULA ================= -->
+  <section id="view-cedula" class="login-page">
+    <form class="login-card" id="form-cedula" novalidate>
+      <header class="login-header">
+        <img class="login-logo" src="img/computab.jpeg" alt="CompuTab">
+        <h1>Ingresá con tu cédula</h1>
+        <p>Para pedir o devolver un equipo</p>
+      </header>
+
+      <fieldset class="login-fields">
+        <p class="form-group">
+          <label for="ingreso-ci"><i class="fas fa-id-card"></i> Cédula</label>
+          <input type="text" id="ingreso-ci" inputmode="numeric" maxlength="9" autocomplete="off"
+            placeholder="Solo números, sin puntos ni guión" required>
+        </p>
+        <div id="ingreso-nuevo" hidden>
+          <p class="hint">Es la primera vez que ingresás. Completá tus datos para registrarte.</p>
+          <p class="form-group">
+            <label for="ingreso-nombre"><i class="fas fa-user"></i> Nombre</label>
+            <input type="text" id="ingreso-nombre" maxlength="16" autocomplete="off">
+          </p>
+          <p class="form-group">
+            <label for="ingreso-apellido"><i class="fas fa-user"></i> Apellido</label>
+            <input type="text" id="ingreso-apellido" maxlength="16" autocomplete="off">
+          </p>
+        </div>
+        <p id="ingreso-error" class="login-error" role="alert"></p>
+      </fieldset>
+
+      <button type="submit" id="btn-ingresar" class="btn btn-blue w-100 shadow-btn">Ingresar</button>
+      <button type="button" id="btn-cedula-volver" class="btn btn-outline w-100" style="margin-top:12px">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+
+      <footer class="login-footer">
+        <small>© 2026 CompuTab</small>
+      </footer>
+    </form>
+  </section>
+
+  <!-- ================= LOGIN (ADMINISTRADOR) ================= -->
+  <section id="view-login" class="login-page">
+    <form class="login-card" id="form-login" novalidate>
+      <header class="login-header">
+        <img class="login-logo" src="img/computab.jpeg" alt="CompuTab">
+        <h1>Sistema de Préstamos de PC</h1>
+        <p>Escuela Técnica de Tala</p>
+      </header>
+
+      <fieldset class="login-fields">
+        <p class="form-group">
+          <label for="login-user"><i class="fas fa-user"></i> Usuario</label>
+          <input type="text" id="login-user" maxlength="50" autocomplete="username" required>
+        </p>
+        <p class="form-group">
+          <label for="login-pass"><i class="fas fa-lock"></i> Contraseña</label>
+          <input type="password" id="login-pass" maxlength="72" autocomplete="current-password" required>
+        </p>
+        <p id="login-error" class="login-error" role="alert"></p>
+      </fieldset>
+
+      <button type="submit" id="btn-login" class="btn btn-blue w-100 shadow-btn">Iniciar sesión</button>
+      <button type="button" id="btn-login-volver" class="btn btn-outline w-100" style="margin-top:12px">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+
+      <footer class="login-footer">
+        <small>© 2026 CompuTab</small>
+      </footer>
+    </form>
+  </section>
+
+  <!-- ================= SISTEMA ================= -->
+  <main class="app-container" id="app-system" hidden>
+    <div class="menu-overlay" id="menu-overlay" hidden></div>
+
+    <aside class="sidebar" id="sidebar">
+      <header class="sidebar-header">
+        <i class="fas fa-desktop"></i>
+        <span class="logo-text">Préstamos de PC</span>
+        <button type="button" id="btn-hamburger" class="btn-hamburger" aria-label="Abrir o cerrar menú">
+          <i class="fas fa-bars"></i>
+        </button>
+      </header>
+
+      <nav class="sidebar-menu">
+        <ul>
+          <!-- Administrador y encargado -->
+          <li class="menu-item active" tabindex="0" data-ir="view-dashboard" data-roles="encargado,administrador"><i
+              class="fas fa-th-large"></i> <span>Dashboard</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-registrar-prestamo" data-roles="encargado,administrador"><i
+              class="fas fa-clipboard-list"></i> <span>Registrar préstamo</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-registrar-devolucion" data-roles="encargado,administrador"><i
+              class="fas fa-undo"></i> <span>Registrar devolución</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-usuarios" data-roles="encargado,administrador"><i
+              class="fas fa-users"></i> <span>Usuarios</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-pc" data-roles="encargado,administrador"><i
+              class="fas fa-laptop"></i> <span>PC y Tablets</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-cursos" data-roles="encargado,administrador"><i
+              class="fas fa-graduation-cap"></i> <span>Cursos</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-historial" data-roles="encargado,administrador"><i
+              class="fas fa-history"></i> <span>Historial de préstamos</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-reportes" data-roles="encargado,administrador"><i
+              class="fas fa-chart-pie"></i> <span>Reportes</span></li>
+          <!-- Rol usuario -->
+          <li class="menu-item" tabindex="0" data-ir="view-mi-inicio" data-roles="usuario"><i class="fas fa-house"></i>
+            <span>Inicio</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-registrar-prestamo" data-roles="usuario"><i
+              class="fas fa-hand-holding"></i> <span>Pedir un equipo</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-registrar-devolucion" data-roles="usuario"><i
+              class="fas fa-undo"></i> <span>Devolver un equipo</span></li>
+          <li class="menu-item" tabindex="0" data-ir="view-historial" data-roles="usuario"><i
+              class="fas fa-history"></i> <span>Mis préstamos</span></li>
+          <!-- Todos -->
+          <li class="menu-item" tabindex="0" data-ir="view-configuracion" data-roles="encargado,administrador"><i class="fas fa-cog"></i>
+            <span>Configuración</span></li>
+        </ul>
+      </nav>
+
+      <footer class="sidebar-logout" id="btn-logout" tabindex="0" role="button">
+        <i class="fas fa-sign-out-alt"></i> <span>Cerrar sesión</span>
+      </footer>
+    </aside>
+
+    <section class="main-content">
+      <header class="main-header">
+        <section class="header-left">
+          <button type="button" id="btn-menu-movil" class="btn-menu-movil" aria-label="Abrir menú"
+            aria-expanded="false"><i class="fas fa-bars"></i></button>
+          <button type="button" id="btn-volver" class="btn-volver" hidden aria-label="Volver al Dashboard">
+            <i class="fas fa-arrow-left"></i> <span id="btn-volver-txt">Volver al Dashboard</span>
+          </button>
+          <span class="breadcrumbs" id="current-path">Dashboard</span>
+        </section>
+        <section class="user-dropdown">
+          <span class="user-avatar-icon"><i class="fas fa-user-shield" id="avatar-icono"></i><img id="avatar-header"
+              alt="" hidden></span>
+          <span id="user-display-name"></span>
+          <span class="user-rol" id="user-display-rol"></span>
+        </section>
+      </header>
+
+      <section class="views-container">
+
+        <!-- 1. DASHBOARD -->
+        <article id="view-dashboard" class="content-view active">
+          <h2>¡Bienvenido al Sistema!</h2>
+
+          <!-- Préstamos vencidos: lo llena js/vencidos.js (solo administrador y encargado) -->
+          <section class="aviso-vencidos" id="aviso-vencidos" role="alert" hidden>
+            <h3>⚠ <span id="vencidos-total">0</span> <span id="vencidos-titulo">préstamos sin devolver fuera de fecha</span></h3>
+            <div class="tabla-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>N°</th>
+                    <th>Estudiante</th>
+                    <th>Cédula</th>
+                    <th>Curso</th>
+                    <th>Equipo</th>
+                    <th>Debía devolver</th>
+                    <th>Atraso</th>
+                  </tr>
+                </thead>
+                <tbody id="vencidos-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="dashboard-grid">
+            <section class="indicator-card text-blue" data-ir="view-pc" data-fe-estado="disponible" tabindex="0"
+              role="button">
+              <i class="fas fa-laptop fa-2x"></i>
+              <span class="num" id="dash-pc-disponibles">–</span>
+              <span class="label">PC y Tablets disponibles</span>
+            </section>
+            <section class="indicator-card text-purple" id="card-usuarios" data-ir="view-usuarios" tabindex="0"
+              role="button">
+              <i class="fas fa-users fa-2x"></i>
+              <span class="num" id="dash-total-usuarios">–</span>
+              <span class="label">Usuarios registrados</span>
+            </section>
+            <section class="indicator-card text-orange" data-ir="view-historial" data-fp-estado="activo" tabindex="0"
+              role="button">
+              <i class="fas fa-exclamation-circle fa-2x"></i>
+              <span class="num" id="dash-prestamos-activos">–</span>
+              <span class="label">Préstamos activos</span>
+            </section>
+          </section>
+
+          <h3>Accesos rápidos</h3>
+          <section class="quick-actions-grid">
+            <button type="button" class="action-card" data-ir="view-registrar-prestamo" data-puede="crear_prestamo">
+              <i class="fas fa-file-medical"></i> <span>Registrar préstamo</span>
+            </button>
+            <button type="button" class="action-card" data-ir="view-registrar-devolucion" data-puede="devolver">
+              <i class="fas fa-file-import"></i> <span>Registrar devolución</span>
+            </button>
+            <button type="button" class="action-card" data-ir="view-cursos">
+              <i class="fas fa-graduation-cap"></i> <span>Cursos</span>
+            </button>
+            <button type="button" class="action-card" data-ir="view-reportes">
+              <i class="fas fa-chart-pie"></i> <span>Reportes</span>
+            </button>
+            <button type="button" class="action-card" data-ir="view-configuracion">
+              <i class="fas fa-cog"></i> <span>Configuración</span>
+            </button>
+          </section>
+        </article>
+
+        <!-- 1b. INICIO DEL ROL USUARIO -->
+        <article id="view-mi-inicio" class="content-view">
+          <h2>Hola, <span id="mi-nombre"></span></h2>
+          <section class="dashboard-grid">
+            <section class="indicator-card text-blue" data-ir="view-registrar-prestamo" tabindex="0" role="button">
+              <i class="fas fa-laptop fa-2x"></i>
+              <span class="num" id="mi-disponibles">–</span>
+              <span class="label">Equipos que podés pedir</span>
+            </section>
+            <section class="indicator-card text-orange" data-ir="view-historial" data-fp-estado="activo" tabindex="0"
+              role="button">
+              <i class="fas fa-hourglass-half fa-2x"></i>
+              <span class="num" id="mi-activos">–</span>
+              <span class="label">Mis préstamos activos</span>
+            </section>
+            <section class="indicator-card text-green" data-ir="view-historial" data-fp-estado="devuelto" tabindex="0"
+              role="button">
+              <i class="fas fa-check-circle fa-2x"></i>
+              <span class="num" id="mi-devueltos">–</span>
+              <span class="label">Equipos que ya devolví</span>
+            </section>
+            <section class="indicator-card text-purple" data-ir="view-historial" data-fp-estado="activo"
+              data-fp-orden="fecha_prevista" tabindex="0" role="button">
+              <i class="fas fa-calendar-day fa-2x"></i>
+              <span class="num" id="mi-proxima">–</span>
+              <span class="label">Próxima devolución</span>
+            </section>
+          </section>
+
+          <h3>Lo que tengo prestado</h3>
+          <div class="tabla-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Equipo</th>
+                  <th>Devolver antes del</th>
+                  <th>Situación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="mi-activos-body"></tbody>
+            </table>
+          </div>
+
+          <section class="quick-actions-grid mt-20">
+            <button type="button" class="action-card" data-ir="view-registrar-prestamo">
+              <i class="fas fa-file-medical"></i> <span>Pedir un equipo</span>
+            </button>
+            <button type="button" class="action-card" data-ir="view-historial">
+              <i class="fas fa-history"></i> <span>Ver todos mis préstamos</span>
+            </button>
+          </section>
+        </article>
+
+        <!-- 2. REGISTRAR PRÉSTAMO -->
+        <article id="view-registrar-prestamo" class="content-view">
+          <h2 id="titulo-prestamo">Registrar préstamo</h2>
+          <form class="form-container" id="form-prestamo" novalidate>
+            <p class="form-group" id="grp-p-usuario">
+              <label for="p-usuario">Usuario</label>
+              <select id="p-usuario"></select>
+              <span class="error-campo" id="err-p-usuario"></span>
+            </p>
+
+            <p class="form-group" id="grp-p-curso">
+              <label for="p-curso">Curso / Grupo</label>
+              <select id="p-curso"></select>
+              <span class="error-campo" id="err-p-curso"></span>
+            </p>
+
+            <h3 class="paso-titulo">1. Elegí un equipo</h3>
+            <section class="equipos-grid" id="p-equipos-grid" role="radiogroup" aria-label="Equipos disponibles"></section>
+            <input type="hidden" id="p-equipo">
+            <span class="error-campo" id="err-p-equipo"></span>
+
+            <h3 class="paso-titulo">2. Fechas</h3>
+            <!-- Rol usuario: las fechas se calculan solas -->
+            <section class="resumen-prestamo" id="resumen-prestamo" hidden>
+              <div><small>Retiro</small><strong id="res-retiro">—</strong></div>
+              <div><small>Devolución</small><strong id="res-devolucion">—</strong></div>
+            </section>
+            <!-- Administrador y encargado: pueden cambiar la fecha -->
+            <section class="form-grid">
+              <p class="form-group" id="grp-p-fecha">
+                <label for="p-fecha">Fecha prevista de devolución</label>
+                <input type="date" id="p-fecha">
+                <span class="error-campo" id="err-p-fecha"></span>
+              </p>
+              <p class="form-group">
+                <label for="p-obs">Observaciones (opcional)</label>
+                <input type="text" id="p-obs" maxlength="100" placeholder="Ej: Equipo con cargador">
+                <span class="error-campo" id="err-p-obs"></span>
+              </p>
+            </section>
+            <p class="hint" id="aviso-prestamo" hidden>El préstamo se registra a tu nombre.</p>
+            <footer class="form-actions mt-20">
+              <button type="submit" id="btn-guardar" class="btn btn-blue shadow-btn">Guardar préstamo</button>
+            </footer>
+          </form>
+        </article>
+
+        <!-- 3. REGISTRAR DEVOLUCIÓN -->
+        <article id="view-registrar-devolucion" class="content-view">
+          <h2 id="titulo-devolucion">Registrar devolución</h2>
+          <form class="form-container" id="form-devolucion" novalidate>
+            <section class="form-grid">
+              <p class="form-group">
+                <label for="d-prestamo">Préstamo activo</label>
+                <select id="d-prestamo"></select>
+                <span class="error-campo" id="err-d-prestamo"></span>
+              </p>
+            </section>
+            <footer class="form-actions mt-20">
+              <button type="submit" id="btn-devolver" class="btn btn-green shadow-btn">Confirmar devolución</button>
+            </footer>
+          </form>
+        </article>
+
+        <!-- 4. USUARIOS -->
+        <article id="view-usuarios" class="content-view">
+          <h2>Usuarios registrados (<span id="contador-usuarios">0</span>)</h2>
+          <p class="barra-acciones" data-puede="editar_usuario">
+            <button type="button" class="btn btn-blue shadow-btn" id="btn-nuevo-usuario"><i class="fas fa-plus"></i>
+              Agregar usuario</button>
+          </p>
+
+          <form class="form-container" id="form-usuario-nuevo" hidden novalidate>
+            <h3>Agregar usuario</h3>
+            <section class="form-grid">
+              <p class="form-group">
+                <label for="n-nombre">Nombre</label>
+                <input type="text" id="n-nombre" maxlength="16" autocomplete="off">
+                <span class="error-campo" id="err-n-nombre"></span>
+              </p>
+              <p class="form-group">
+                <label for="n-apellido">Apellido</label>
+                <input type="text" id="n-apellido" maxlength="16" autocomplete="off">
+                <span class="error-campo" id="err-n-apellido"></span>
+              </p>
+              <p class="form-group">
+                <label for="n-ci">Cédula</label>
+                <input type="text" id="n-ci" inputmode="numeric" maxlength="9" autocomplete="off"
+                  placeholder="Solo números, sin puntos ni guión">
+                <span class="error-campo" id="err-n-ci"></span>
+              </p>
+            </section>
+            <p class="hint" id="hint-n-estudiante">Estudiantes y docentes ingresan solo con su cédula: no necesitan usuario ni contraseña.</p>
+            <footer class="form-actions mt-20 acciones">
+              <button type="submit" class="btn btn-blue shadow-btn" id="btn-guardar-nuevo-usuario">Guardar usuario</button>
+              <button type="button" class="btn btn-outline" id="btn-cancelar-nuevo-usuario">Cancelar</button>
+            </footer>
+          </form>
+
+          <form class="form-container" id="form-usuario" hidden novalidate>
+            <h3>Editar usuario</h3>
+            <section class="form-grid">
+              <p class="form-group">
+                <label for="u-nombre">Nombre</label>
+                <input type="text" id="u-nombre" maxlength="40" autocomplete="off">
+                <span class="error-campo" id="err-u-nombre"></span>
+              </p>
+              <p class="form-group">
+                <label for="u-apellido">Apellido</label>
+                <input type="text" id="u-apellido" maxlength="40" autocomplete="off">
+                <span class="error-campo" id="err-u-apellido"></span>
+              </p>
+              <p class="form-group">
+                <label for="u-ci">Cédula</label>
+                <input type="text" id="u-ci" inputmode="numeric" maxlength="9" autocomplete="off"
+                  placeholder="Solo números, sin puntos ni guión">
+                <span class="error-campo" id="err-u-ci"></span>
+              </p>
+              <p class="form-group">
+                <label for="u-estado">Estado</label>
+                <select id="u-estado">
+                  <option value="Activo">Activo</option>
+                  <option value="Inactivo">Inactivo</option>
+                </select>
+              </p>
+            </section>
+            <h3 class="mt-20">Teléfonos</h3>
+            <section class="form-grid" id="u-telefonos"></section>
+            <p class="mt-20"><button type="button" class="btn btn-outline btn-sm" id="btn-agregar-telefono"><i
+                  class="fas fa-plus"></i> Agregar teléfono</button></p>
+            <footer class="form-actions mt-20 acciones">
+              <button type="submit" class="btn btn-blue shadow-btn" id="btn-guardar-usuario">Guardar cambios</button>
+              <button type="button" class="btn btn-outline" id="btn-cancelar-usuario">Cancelar</button>
+            </footer>
+          </form>
+
+          <div class="tabla-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Usuario</th>
+                  <th>Cédula</th>
+                  <th>Nombre</th>
+                  <th>Estado</th>
+                  <th id="th-acciones-usuarios">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-usuarios-body"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- 5. PC Y TABLETS -->
+        <article id="view-pc" class="content-view">
+          <h2>Inventario de PC y Tablets (<span id="contador-pc">0</span>)</h2>
+          <p class="barra-acciones" data-puede="crear_equipo">
+            <button type="button" class="btn btn-blue shadow-btn" id="btn-nuevo-equipo"><i class="fas fa-plus"></i>
+              Agregar equipo</button>
+          </p>
+
+          <form class="form-container" id="form-equipo" hidden novalidate>
+            <h3 id="titulo-form-equipo">Agregar equipo</h3>
+            <section class="form-grid">
+              <p class="form-group">
+                <label for="e-tipo">Tipo</label>
+                <select id="e-tipo">
+                  <option value="Notebook">Notebook</option>
+                  <option value="Tablet">Tablet</option>
+                </select>
+              </p>
+              <p class="form-group">
+                <label for="e-inventario">N° de inventario</label>
+                <input type="text" id="e-inventario" maxlength="30" placeholder="Ej: PC-2025-015">
+                <span class="error-campo" id="err-e-inventario"></span>
+              </p>
+              <p class="form-group">
+                <label for="e-marca">Marca</label>
+                <input type="text" id="e-marca" maxlength="40" placeholder="Ej: Samsung">
+                <span class="error-campo" id="err-e-marca"></span>
+              </p>
+              <p class="form-group">
+                <label for="e-modelo">Modelo</label>
+                <input type="text" id="e-modelo" maxlength="40" placeholder="Ej: Galaxy Tab A8">
+                <span class="error-campo" id="err-e-modelo"></span>
+              </p>
+              <p class="form-group">
+                <label for="e-obs">Observaciones</label>
+                <input type="text" id="e-obs" maxlength="100" placeholder="Ej: Falta el cargador">
+                <span class="error-campo" id="err-e-obs"></span>
+              </p>
+            </section>
+            <p class="hint">El equipo nuevo queda como disponible. Las tablets llevan un N° de inventario que empieza
+              con TAB.</p>
+            <footer class="form-actions mt-20 acciones">
+              <button type="submit" class="btn btn-blue shadow-btn" id="btn-guardar-equipo">Guardar equipo</button>
+              <button type="button" class="btn btn-outline" id="btn-cancelar-equipo">Cancelar</button>
+            </footer>
+          </form>
+
+          <section class="form-container filtros">
+            <h3>Buscar y ordenar</h3>
+            <section class="form-grid">
+              <p class="form-group">
+                <label for="q-texto">Buscar</label>
+                <input type="search" id="q-texto" placeholder="Inventario, marca, modelo u observaciones">
+              </p>
+              <p class="form-group">
+                <label for="q-estado">Estado</label>
+                <select id="q-estado">
+                  <option value="">Todos</option>
+                  <option value="disponible">Disponible</option>
+                  <option value="prestado">Prestado</option>
+                  <option value="mantenimiento">Mantenimiento</option>
+                </select>
+              </p>
+              <p class="form-group">
+                <label for="q-orden">Ordenar por</label>
+                <select id="q-orden">
+                  <option value="">Sin orden</option>
+                  <option value="inventario">N° inventario</option>
+                  <option value="marca">Marca</option>
+                  <option value="modelo">Modelo</option>
+                  <option value="estado">Estado</option>
+                </select>
+              </p>
+              <p class="form-group">
+                <label for="q-direccion">Dirección</label>
+                <select id="q-direccion">
+                  <option value="asc">Ascendente</option>
+                  <option value="desc">Descendente</option>
+                </select>
+              </p>
+            </section>
+            <footer class="form-actions mt-20">
+              <button type="button" class="btn btn-outline" id="btn-limpiar-equipos">Limpiar</button>
+            </footer>
+          </section>
+          <div class="tabla-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Imagen</th>
+                  <th>N° Inventario</th>
+                  <th>Marca</th>
+                  <th>Modelo</th>
+                  <th>Tipo</th>
+                  <th>Estado</th>
+                  <th>Observaciones</th>
+                  <th id="th-acciones-pc">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-pc-body"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- 5b. CURSOS -->
+        <article id="view-cursos" class="content-view">
+          <h2>Cursos (<span id="contador-cursos">0</span>)</h2>
+          <p class="barra-acciones" data-puede="editar_curso">
+            <button type="button" class="btn btn-blue shadow-btn" id="btn-nuevo-curso"><i class="fas fa-plus"></i>
+              Agregar curso</button>
+          </p>
+
+          <form class="form-container" id="form-curso" hidden novalidate>
+            <h3 id="titulo-form-curso">Agregar curso</h3>
+            <section class="form-grid">
+              <p class="form-group">
+                <label for="c-nombre">Nombre</label>
+                <input type="text" id="c-nombre" maxlength="50" autocomplete="off" placeholder="Ej: Gastronomía">
+                <span class="error-campo" id="err-c-nombre"></span>
+              </p>
+              <p class="form-group">
+                <label for="c-desc">Descripción</label>
+                <input type="text" id="c-desc" maxlength="100" autocomplete="off" placeholder="Ej: 2do año">
+                <span class="error-campo" id="err-c-desc"></span>
+              </p>
+              <p class="form-group">
+                <label for="c-tipo">Tipo</label>
+                <select id="c-tipo">
+                  <option value="Curso">Curso</option>
+                </select>
+              </p>
+            </section>
+            <footer class="form-actions mt-20 acciones">
+              <button type="submit" class="btn btn-blue shadow-btn" id="btn-guardar-curso">Guardar curso</button>
+              <button type="button" class="btn btn-outline" id="btn-cancelar-curso">Cancelar</button>
+            </footer>
+          </form>
+
+          <section class="form-container filtros">
+            <h3>Buscar</h3>
+            <section class="form-grid">
+              <p class="form-group">
+                <label for="qc-texto">Buscar</label>
+                <input type="search" id="qc-texto" placeholder="Nombre o descripción">
+              </p>
+            </section>
+          </section>
+
+          <div class="tabla-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Tipo</th>
+                  <th id="th-acciones-cursos">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-cursos-body"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- 6. HISTORIAL -->
+        <article id="view-historial" class="content-view">
+          <h2><span id="titulo-historial">Historial de préstamos</span> (<span id="contador-historial">0</span>)</h2>
+
+          <section class="form-container filtros" id="seccion-filtros">
+            <h3>Buscar y ordenar</h3>
+            <form id="form-filtros">
+              <section class="form-grid">
+                <p class="form-group" id="grp-f-usuario">
+                  <label for="f-usuario">Usuario</label>
+                  <input type="search" id="f-usuario" autocomplete="off" placeholder="Nombre, apellido o usuario">
+                </p>
+                <p class="form-group">
+                  <label for="f-estado">Estado</label>
+                  <select id="f-estado">
+                    <option value="">Todos</option>
+                    <option value="activo">Activos</option>
+                    <option value="devuelto">Devueltos</option>
+                  </select>
+                </p>
+                <p class="form-group">
+                  <label for="f-orden">Ordenar por</label>
+                  <select id="f-orden">
+                    <option value="">Sin orden</option>
+                    <option value="id_prestamo">ID</option>
+                    <option value="estado">Estado</option>
+                    <option value="fecha_prevista">Fecha prevista</option>
+                    <option value="fecha_prestamo_devolucion">Fecha devolución</option>
+                  </select>
+                </p>
+                <p class="form-group">
+                  <label for="f-direccion">Dirección</label>
+                  <select id="f-direccion">
+                    <option value="asc">Ascendente</option>
+                    <option value="desc">Descendente</option>
+                  </select>
+                </p>
+              </section>
+              <footer class="form-actions mt-20 acciones">
+                <button type="submit" class="btn btn-blue shadow-btn">Aplicar</button>
+                <button type="button" class="btn btn-outline" id="btn-limpiar">Limpiar</button>
+              </footer>
+            </form>
+            <p class="hint" id="url-actual" hidden></p>
+          </section>
+          <div class="tabla-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Usuario</th>
+                  <th>PC / Tablet</th>
+                  <th>Curso</th>
+                  <th>Prevista</th>
+                  <th>Devuelto</th>
+                  <th>Estado</th>
+                  <th id="th-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-historial-body"></tbody>
+            </table>
+          </div>
+          <p class="hint" id="aviso-historial"></p>
+        </article>
+
+        <!-- 7. REPORTES -->
+        <article id="view-reportes" class="content-view">
+          <h2>Reportes del Sistema</h2>
+
+          <form class="form-container filtros filtros-reportes" id="form-reportes" novalidate>
+            <h3>Filtrar por fecha de devolución prevista</h3>
+            <section class="form-grid">
+              <p class="form-group">
+                <label for="r-desde">Desde</label>
+                <input type="date" id="r-desde">
+              </p>
+              <p class="form-group">
+                <label for="r-hasta">Hasta</label>
+                <input type="date" id="r-hasta">
+              </p>
+              <p class="form-group">
+                <label for="r-estado">Estado</label>
+                <select id="r-estado">
+                  <option value="">Todos</option>
+                  <option value="activo">Activos</option>
+                  <option value="devuelto">Devueltos</option>
+                </select>
+              </p>
+            </section>
+            <span class="error-campo" id="err-r-rango"></span>
+            <footer class="form-actions mt-20 acciones">
+              <button type="submit" class="btn btn-blue shadow-btn">Aplicar</button>
+              <button type="button" class="btn btn-outline" id="btn-limpiar-reportes">Limpiar</button>
+            </footer>
+          </form>
+          <p class="hint" id="rep-rango"></p>
+
+          <section class="reportes-grid">
+            <article class="card-reporte blue" data-r-estado="" tabindex="0" role="button" title="Ver todos los préstamos"><span class="card-title">Total préstamos</span>
+              <h3 id="rep-total-prestamos" class="card-value">0</h3>
+            </article>
+            <article class="card-reporte red" data-r-estado="activo" tabindex="0" role="button" title="Ver solo los préstamos activos"><span class="card-title">Préstamos activos</span>
+              <h3 id="rep-prestamos-activos" class="card-value">0</h3>
+            </article>
+            <article class="card-reporte green" data-ir="view-pc" data-fe-estado="disponible" tabindex="0" role="button" title="Ir a Equipos disponibles"><span class="card-title">Equipos disponibles</span>
+              <h3 id="rep-equipos-disponibles" class="card-value">0</h3>
+            </article>
+            <article class="card-reporte purple" data-ir="view-usuarios" tabindex="0" role="button" title="Ir a Usuarios"><span class="card-title">Usuarios registrados</span>
+              <h3 id="rep-total-usuarios" class="card-value">0</h3>
+            </article>
+          </section>
+
+          <h3>Listado de préstamos</h3>
+          <div class="tabla-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Usuario</th>
+                  <th>Equipo</th>
+                  <th>Curso</th>
+                  <th>Prevista</th>
+                  <th>Devuelto</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-reportes-body"></tbody>
+            </table>
+          </div>
+
+          <section class="acciones-reportes">
+            <button type="button" class="btn btn-blue" id="btn-pdf"><i class="fas fa-file-pdf"></i> Exportar
+              PDF</button>
+            <button type="button" class="btn btn-green" id="btn-csv"><i class="fas fa-file-excel"></i> Exportar Excel
+              (CSV)</button>
+          </section>
+        </article>
+
+        <!-- 8. CONFIGURACIÓN -->
+        <article id="view-configuracion" class="content-view">
+          <h2>Configuración</h2>
+          <section class="config-section">
+            <h3><i class="fas fa-user-shield"></i> Mi cuenta</h3>
+            <section class="perfil-foto">
+              <span class="avatar-grande"><i class="fas fa-user" id="perfil-icono"></i><img id="perfil-img"
+                  alt="Tu foto de perfil" hidden></span>
+              <section class="perfil-botones">
+                <input type="file" id="foto-archivo" accept="image/png,image/jpeg,image/webp" hidden>
+                <section class="acciones">
+                  <button type="button" class="btn btn-blue btn-sm" id="btn-foto">Subir foto</button>
+                  <button type="button" class="btn btn-outline btn-sm" id="btn-quitar-foto" hidden>Quitar foto</button>
+                </section>
+                <span class="hint">JPG, PNG o WebP. La foto se guarda solo en este navegador.</span>
+              </section>
+            </section>
+            <form class="config-form" onsubmit="return false">
+              <label><span>Usuario</span><input type="text" id="cfg-usuario" disabled></label>
+              <label><span>Rol</span><input type="text" id="cfg-rol" disabled></label>
+            </form>
+          </section>
+          <section class="config-section">
+            <h3><i class="fas fa-palette"></i> Apariencia</h3>
+            <section class="config-toggle">
+              <span>Modo oscuro</span>
+              <button type="button" class="btn btn-purple" id="btn-tema"><i class="fas fa-moon"></i> Cambiar
+                tema</button>
+            </section>
+          </section>
+        </article>
+
+      </section>
+    </section>
+  </main>
+
+   <script src="js/config.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/modales.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/vencidos.js"></script>
+</body>
+
+</html>
