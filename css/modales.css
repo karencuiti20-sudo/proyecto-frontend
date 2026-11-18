@@ -1,0 +1,42 @@
+/* Modales y avisos. Cargar DESPUÉS de styles.css */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); display: grid; place-items: center; padding: 16px; z-index: 100; animation: modal-fade .15s ease-out; }
+.modal-caja { background: #fff; color: #111; width: min(100%, 380px); padding: 30px 28px 24px; border-radius: 16px; text-align: center; animation: modal-pop .18s ease-out; }
+.modal-caja h2 { margin: 0 0 8px; font-size: 21px; color: inherit; }
+.modal-texto { margin: 0 0 20px; color: #555; font-size: 15px; line-height: 1.4; }
+.modal-icono { width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 18px; font-size: 26px; }
+.modal-ok .modal-icono { background: #cdeacb; color: #0a5c0a; }
+.modal-info .modal-icono { background: #cfe2fa; color: #1d4f9c; }
+.modal-danger .modal-icono { background: #f8d7d7; color: #a31f1f; }
+.modal-warn .modal-icono { background: #f8dca3; color: #7a4a00; }
+.modal-progreso { height: 4px; background: #cdeacb; border-radius: 2px; margin: 0 0 18px; overflow: hidden; }
+.modal-progreso i { display: block; height: 100%; background: #0a5c0a; transform-origin: left; animation: modal-barra linear forwards; }
+.modal-acciones { display: flex; justify-content: center; gap: 10px; }
+
+/* Versión grande y llamativa: franja de color arriba, ícono grande que "salta" al abrir */
+.modal-grande { width: min(100%, 460px); padding: 40px 36px 30px; border-top: 8px solid; box-shadow: 0 20px 60px rgba(0, 0, 0, .35); }
+.modal-grande.modal-ok { border-top-color: #2cb563; }
+.modal-grande.modal-info { border-top-color: #0275d8; }
+.modal-grande.modal-danger { border-top-color: #d9534f; }
+.modal-grande.modal-warn { border-top-color: #f0ad4e; }
+.modal-grande .modal-icono { width: 96px; height: 96px; font-size: 40px; margin-bottom: 22px; animation: modal-salto .45s cubic-bezier(.3, 1.6, .5, 1); }
+.modal-grande h2 { font-size: 28px; margin-bottom: 10px; }
+.modal-grande .modal-texto { font-size: 17px; margin-bottom: 26px; }
+.modal-grande .modal-progreso { height: 6px; margin-bottom: 22px; }
+.modal-grande .btn { padding: 12px 26px; font-size: 16px; }
+
+/* Aviso breve: arriba a la derecha, por encima de los modales */
+#mensajes { top: 16px; bottom: auto; z-index: 200; }
+.mensaje { display: flex; align-items: center; gap: 8px; background: #fff; color: #0a5c0a; border: 1px solid #6cc06c; font-weight: 600; box-shadow: 0 2px 8px rgba(0, 0, 0, .12); animation: modal-entra .2s ease-out; }
+.mensaje.error { color: #a31f1f; border-color: #e59a9a; }
+
+body.dark-mode .modal-caja { background: #1e1e2d; color: #fff; }
+body.dark-mode .modal-texto { color: #c9c9d6; }
+body.dark-mode .mensaje { background: #1e1e2d; }
+body.dark-mode .mensaje.error { color: #f1a1a1; }
+
+@keyframes modal-salto { from { transform: scale(.4); opacity: 0; } }
+@keyframes modal-fade { from { opacity: 0; } }
+@keyframes modal-pop { from { opacity: 0; transform: translateY(8px) scale(.97); } }
+@keyframes modal-barra { to { transform: scaleX(0); } }
+@keyframes modal-entra { from { opacity: 0; transform: translateX(12px); } }
+@media (prefers-reduced-motion: reduce) { .modal-overlay, .modal-caja, .modal-icono, .modal-progreso i, .mensaje { animation: none; } }

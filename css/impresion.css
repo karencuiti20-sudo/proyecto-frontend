@@ -1,0 +1,35 @@
+/* Hoja de impresión / "Exportar PDF". Cargar DESPUÉS de styles.css y modales.css */
+@page { size: A4; margin: 14mm; }
+
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Sin altura fija ni scroll: así el PDF toma todo el contenido y todas las hojas */
+  html, body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; }
+  .app-container, .main-content, .views-container { display: block !important; width: auto !important; height: auto !important; overflow: visible !important; padding: 0 !important; }
+  .content-view { animation: none; }
+
+  /* Lo que no va en el papel */
+  .sidebar, .main-header, .menu-overlay, .acciones-reportes, #mensajes, .modal-overlay { display: none !important; }
+
+  /* Tarjetas de totales: las 4 en una fila */
+  .reportes-grid { flex-wrap: nowrap; gap: 10px; }
+  .card-reporte { min-width: 0; break-inside: avoid; }
+
+  /* Tabla de verdad (la pantalla angosta la convierte en tarjetas) */
+  .tabla-scroll { overflow: visible; }
+  .data-table { display: table; width: 100%; background: transparent; box-shadow: none; }
+  .data-table thead { display: table-header-group; position: static; left: auto; }
+  .data-table tbody { display: table-row-group; width: auto; }
+  .data-table tr { display: table-row; width: auto; background: transparent; border: 0; border-radius: 0; margin: 0; padding: 0; break-inside: avoid; }
+  .data-table th, .data-table td { display: table-cell; width: auto; text-align: left; padding: 8px 10px; font-size: 12px; border-bottom: 1px solid #ccc; }
+  .data-table td::before { content: none; }
+  .data-table td:last-child { border-bottom: 1px solid #ccc; }   /* la regla de celular se la quitaba a "Estado" */
+  .data-table th, .data-table td { vertical-align: middle; }
+
+  /* Siempre en claro, aunque esté el modo oscuro */
+  body.dark-mode h2, body.dark-mode h3 { color: #111; }
+  body.dark-mode .data-table, body.dark-mode .data-table tr { background: #fff; color: #000; border-color: #ccc; }
+  body.dark-mode .data-table th { background: #f1f5f9; color: #333; }
+  body.dark-mode .data-table td { border-bottom-color: #ccc; }
+}

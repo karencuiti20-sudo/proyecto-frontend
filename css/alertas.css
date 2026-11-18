@@ -1,0 +1,33 @@
+/* Aviso de alertas pendientes (dashboard de administrador / encargado) */
+.aviso-alertas {
+  border: 1px solid #d97706;
+  background: rgba(217, 119, 6, 0.10);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 0 0 24px;
+  animation: alerta-latido 1.6s ease-in-out infinite;
+}
+
+.aviso-alertas[hidden] { display: none; }
+
+.aviso-alertas h3 { margin: 0 0 12px; color: #b45309; }
+
+body.dark-mode .aviso-alertas h3 { color: #fbbf24; }
+
+@keyframes alerta-latido {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.45); }
+  50% { box-shadow: 0 0 0 8px rgba(217, 119, 6, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) { .aviso-alertas { animation: none; } }
+
+@media print { .aviso-alertas { display: none !important; } }
+
+/* Cada alerta es clickeable: lleva a Registrar devolución o al equipo */
+.aviso-alertas .fila-alerta { cursor: pointer; }
+.aviso-alertas .fila-alerta:hover { background: rgba(217, 119, 6, 0.12); }
+.aviso-alertas .fila-alerta:focus-visible { outline: 2px solid #d97706; outline-offset: -2px; }
+
+/* Equipo que nadie tenía prestado cuando saltó la alerta */
+.aviso-alertas td.sin-prestamo { color: #dc2626; font-weight: 600; }
+body.dark-mode .aviso-alertas td.sin-prestamo { color: #f87171; }
